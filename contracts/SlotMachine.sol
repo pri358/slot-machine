@@ -5,18 +5,18 @@ contract SlotMachine {
     mapping(address=>int) public players;
     uint256 public contractBalance;
 
-    function play() public payable {
+    function play(uint256 _betAmount) public payable {
         uint256 userBalance = msg.value;
-        require(userBalance > 0);
+        require(userBalance > _betAmount, "User should have enough balance");
         contractBalance = address(this).balance;
-        uint256 winBalance = calculateWinOrLoss();
+        uint256 winBalance = calculateLoL();
         if(winBalance > 0){
             payable(msg.sender).transfer(winBalance);
             contractBalance = address(this).balance;
         }
     }
 
-    function calculateWinOrLoss() internal pure returns (uint256) {
+    function calculateLoL() internal pure returns (uint256) {
         return 100;
     }
 
