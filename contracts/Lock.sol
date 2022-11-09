@@ -25,9 +25,13 @@ contract Lock {
 
     function logicOfLuck (string memory _message) public payable {
         // Add functionality to make payout according to bet amount
+
+        // Check if user balance > betAmount
+
         uint8 reel1 = random(1);
         uint8 reel2 = random(2);
         uint8 reel3 = random(3);
+        bool isWin = false;
 
         console.log("Amount bet: ", _message);
 
@@ -35,15 +39,29 @@ contract Lock {
         console.log("Reel2: ", reel2);
         console.log("Reel3: ", reel3);
 
+        uint256 prizeAmount = 0 ether;
+
         if(reel1 == reel2 || reel2 == reel3 || reel3 == reel1) {
             // Check if all same
             if(reel1 == reel2 && reel2 == reel3) {
                 console.log("JACKPOT! You win 0.1 ETH");
+                prizeAmount = 0.1 ether;
             } else {
                 console.log("Congratulations. You win 0.01 ETH");
+                prizeAmount = 0.01 ether;
             }
+            isWin = true;
         } else {
             console.log("Loser :) ");
+        }
+        
+        if (isWin) {
+            require(
+                prizeAmount <= address(this).balance,
+                "Trying to withdraw more money than the contract has."
+            );
+            (bool success, ) = (msg.sender).call{value: prizeAmount}("");
+            require(success, "Failed to withdraw money from contract.");
         }
     }
 
